@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_progmob_2021/main.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class Pertemuan1 extends StatefulWidget {
@@ -12,59 +14,65 @@ class Pertemuan1 extends StatefulWidget {
 }
 
 class _Pertemuan1State extends State<Pertemuan1> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            TextFormField(
-              decoration : new InputDecoration(
-                labelText: "Tes Input",
-                hintText: "Formatnya bos :",
-              )
-            ),
-            Padding(
-              padding: EdgeInsets.all(8.0),
-            ),
-            TextFormField(
-                decoration : new InputDecoration(
-                  labelText: "Tes Input 2",
-                  hintText: "Formatnya bos :",
-                  border : OutlineInputBorder(
-                      borderRadius: new BorderRadius.circular(5),
-                  )
-                ),
-            ),
-            TextButton(
-              style: ButtonStyle(
-                foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-            ),
-            onPressed: () { },
-            child: Text('Save'),
-          )
-          ],
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
-      ),
-      //floatingActionButton: FloatingActionButton(
-        //onPressed: _incrementCounter,
-        //tooltip: 'Increment',
-        //child: const Icon(Icons.add),
-      //), // This trailing comma makes auto-formatting nicer for build methods.
+        body: Form(
+            key: _formKey,
+            child: Container(
+                padding: EdgeInsets.all(20.0),
+                child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: new InputDecoration(
+                          hintText: "Misal : Dwi Arniindita",
+                          labelText: "Masukkan Nama Lengkap",
+                          icon: Icon(Icons.people),
+                          border: OutlineInputBorder(
+                              borderRadius: new BorderRadius.circular(5.0)),
+                        ),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return 'Nama Tidak Boleh Dikosongkan';
+                          }
+                          return null;
+                        },
+                      ),
+                      RaisedButton(
+                        child: Text(
+                          "Submit",
+                          style: TextStyle(color: Colors.blueAccent),
+                        ),
+                        color: Colors.yellow,
+                        onPressed: () {
+                          if (_formKey.currentState!.validate()) {}
+                        },
+                      ),
+                      RaisedButton(
+                        child: Text(
+                          "Logout",
+                          style: TextStyle(color: Colors.blueAccent),
+                        ),
+                        color: Colors.yellow,
+                        onPressed: () async {
+                          //Navigator.pop(context);
+                          SharedPreferences pref = await SharedPreferences.getInstance();
+                          await pref.setString("is_login", 1);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(builder: (context) => MyHomePage(title: 'Tes Pertemuan 1',)),
+                          );
+                        },
+                      )
+                    ]
+                )
+            )
+        )
     );
   }
 }
