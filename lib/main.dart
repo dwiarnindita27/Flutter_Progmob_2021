@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_progmob_2021/pertemuan1.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'dashboard.dart';
+import 'mahasiswa/dashboardMhs.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -47,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if(isLogin==1){
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => Pertemuan1(title: 'Tes Pertemuan 1',)),
+        MaterialPageRoute(builder: (context) => Dashboard(title: 'Dashboard',)),
       );
     }
   }
@@ -85,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 await pref.setInt("is_login", 0);
                 Navigator.pushReplacement(
                   context,
-                  MaterialPageRoute(builder: (context) => Pertemuan1(title: 'Tes Pertemuan 1',)),
+                  MaterialPageRoute(builder: (context) => Dashboard(title: 'Dashboard',)),
                 );
               },
             )

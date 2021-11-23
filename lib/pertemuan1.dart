@@ -62,7 +62,7 @@ class _Pertemuan1State extends State<Pertemuan1> {
                         onPressed: () async {
                           //Navigator.pop(context);
                           SharedPreferences pref = await SharedPreferences.getInstance();
-                          await pref.setString("is_login", 1);
+                          await pref.setInt("is_login", 1);
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(builder: (context) => MyHomePage(title: 'Tes Pertemuan 1',)),
