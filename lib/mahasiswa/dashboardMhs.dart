@@ -1,5 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_progmob_2021/apiservices.dart';
+import 'package:flutter_progmob_2021/mahasiswa/updatemhs.dart';
+import '../model.dart';
+import 'addmhs.dart';
 
 class DashboardMhs extends StatefulWidget{
   DashboardMhs({Key? key, required this.title}) : super(key: key);
@@ -12,21 +18,103 @@ class DashboardMhs extends StatefulWidget{
 
 class _DashboardMhsState extends State<DashboardMhs> {
   final _formKey = GlobalKey<FormState>();
+
+  List<Mahasiswa> lMhs = [];
+
+  FutureOr onGoBack(dynamic value){
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar : AppBar(
           title : Text(widget.title),
-        ),
-        body : Container(
-            child : Center(
-              child : Text("Dashboard Mahasiswa",
-                style: TextStyle(
-                    fontSize: 20
-                ),
-              ),
+          actions: <Widget>[
+            IconButton(
+              icon: Icon(Icons.add),
+              onPressed: (){
+                Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context)=> AddMhs:(title: "Input Data Mahasiswa")),
+                ).then(onGoBack);
+              },
             )
-        )
+          ],
+        ),
+      body: FutureBuilder(
+        future: ApiServices().getMahasiswa(),
+        builder: (BuildContext context, AsyncSnapshot<List<Mahasiswa>?> snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+                child: Text(
+                    "Something Wrong With message: ${snapshot.error.toString()}"
+                )
+            );
+          } else if (snapshot.connectionState == ConnectionState.done) {
+            lMhs = snapshot.data!;
+            return ListView.builder(
+              itemBuilder: (context, position) {
+                return Card(
+                    margin: new EdgeInsets.symmetric(
+                        horizontal: 5.0, vertical: 1.0),
+                    child: Container(
+                        child: ListTile(
+                          title: Text(lMhs[position].nama + "-" + lMhs[position]
+                              .nim),
+                          subtitle: Text(lMhs[position].email),
+                          leading: CircleAvatar(
+                            backgroundImage: NetworkImage(lMhs[position].foto),
+                          ),
+                          onLongPress: () {
+                            showDialog(
+                                context: context,
+                                builder: (_) =>
+                                new AlertDialog(
+                                  content: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      FlatButton(
+                                          child: Text("Update"),
+                                          onPressed: () {
+                                            Navigator.pop(context);
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(builder: (context) => UpdateMhs(title: "Input data mahasiswa", mhs: lMhs[position],nimcari: lMhs[position].nim)),
+                                            ).then(onGoBack);
+                                          },
+                                      ),
+                                      Divider(
+                                        color: Colors.black,
+                                        height: 20,
+                                      ),
+                                      FlatButton(
+                                        child: Text("Delete"),
+                                        onPressed: () async {
+                                          ApiServices().deleteMhs(
+                                              lMhs[position].nim);
+                                          Navigator.pop(context);
+                                          setState(() {});
+                                        },
+                                      )
+                                    ],
+                                  ),
+                                )
+                            );
+                          },
+                        )
+                    )
+                );
+              },
+              itemCount: lMhs.length,
+            );
+          } else {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+        },
+      )
     );
   }
 }
